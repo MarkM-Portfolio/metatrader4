@@ -1,0 +1,40 @@
+# UBUNTU- EAGLE HUNTER (H4)
+50 * * * *  /usr/bin/python3 /home/ubuntu/metatrader4/technical-analysis.py H4
+58 * * * *  /usr/bin/python3 /home/ubuntu/metatrader4/technical-analysis.py H4
+
+-----------------------------------------------------------------------------------------------------------------------
+
+# UBUNTU - EAGLE HUNTER (H1)
+50 * * * *  /usr/bin/python3 /home/ubuntu/metatrader4/technical-analysis.py H1
+58 * * * *  /usr/bin/python3 /home/ubuntu/metatrader4/technical-analysis.py H1
+
+-----------------------------------------------------------------------------------------------------------------------
+
+# UBUNTU - VISTA PROXIMA (M15)
+12 * * * *  /usr/bin/python3 /home/ubuntu/metatrader4/technical-analysis.py M15
+27 * * * *  /usr/bin/python3 /home/ubuntu/metatrader4/technical-analysis.py M15
+42 * * * *  /usr/bin/python3 /home/ubuntu/metatrader4/technical-analysis.py M15
+57 * * * *  /usr/bin/python3 /home/ubuntu/metatrader4/technical-analysis.py M15
+
+-----------------------------------------------------------------------------------------------------------------------
+
+# AWS - EAGLE HUNTER VPS
+* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/M1/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive
+* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/M5/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive
+* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/M15/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive
+
+05 00 * * * rm -rf /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files/*-news.txt
+55 00 * * * /usr/local/bin/aws s3 cp s3://tech-analysis/NEWS/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive
+
+15 04 * * 6 rm -rf /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files/*
+
+# AWS - TECH ANALYSIS SERVER
+*/3 * * * * /usr/bin/python3 technical-analysis-AWS.py M1
+*/5 * * * * /usr/bin/python3 technical-analysis-AWS.py M5
+*/5 * * * * /usr/bin/python3 technical-analysis-AWS.py M15
+
+*/3 * * * * /usr/bin/python3 technical-analysis-AWS-GOLD.py M1
+*/5 * * * * /usr/bin/python3 technical-analysis-AWS-GOLD.py M5
+
+*/10 00 * * * /usr/bin/python3 news-scheduler-AWS.py
+

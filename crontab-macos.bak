@@ -1,0 +1,25 @@
+# MACOS - EAGLE HUNTER (H4)
+50 * * * *  /usr/local/Cellar/python@3.11/3.11.1/bin/python3.11 ${HOME}/Projects/Mark/metatrader4/technical-analysis.py H4
+58 * * * *  /usr/local/Cellar/python@3.11/3.11.1/bin/python3.11 ${HOME}/Projects/Mark/metatrader4/technical-analysis.py H4
+
+-----------------------------------------------------------------------------------------------------------------------
+
+# MACOS - EAGLE HUNTER (H1)
+50 * * * *  /usr/local/Cellar/python@3.11/3.11.1/bin/python3.11 ${HOME}/Projects/Mark/metatrader4/technical-analysis.py H1
+58 * * * *  /usr/local/Cellar/python@3.11/3.11.1/bin/python3.11 ${HOME}/Projects/Mark/metatrader4/technical-analysis.py H1
+
+-----------------------------------------------------------------------------------------------------------------------
+
+# MACOS - EAGLE HUNTER (M5) -- use M1 chart
+* * * * *  /usr/local/Cellar/python@3.11/3.11.1/bin/python3.11 ${HOME}/Projects/Mark/metatrader4/technical-analysis.py M1
+* * * * *  /usr/local/Cellar/python@3.11/3.11.1/bin/python3.11 ${HOME}/Projects/Mark/metatrader4/technical-analysis.py M5
+
+-----------------------------------------------------------------------------------------------------------------------
+
+# MACOS - VISTA PROXIMA (M15)
+12 * * * *  /usr/local/Cellar/python@3.11/3.11.1/bin/python3.11 ${HOME}/Projects/Mark/metatrader4/technical-analysis.py M15
+27 * * * *  /usr/local/Cellar/python@3.11/3.11.1/bin/python3.11 ${HOME}/Projects/Mark/metatrader4/technical-analysis.py M15
+42 * * * *  /usr/local/Cellar/python@3.11/3.11.1/bin/python3.11 ${HOME}/Projects/Mark/metatrader4/technical-analysis.py M15
+57 * * * *  /usr/local/Cellar/python@3.11/3.11.1/bin/python3.11 ${HOME}/Projects/Mark/metatrader4/technical-analysis.py M15
+
+-----------------------------------------------------------------------------------------------------------------------

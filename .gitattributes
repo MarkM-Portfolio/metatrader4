@@ -1,0 +1,16 @@
+*.bak linguist-language=Bak linguist-vendored=false
+*.chr linguist-language=Chr linguist-vendored=false
+*.dll linguist-language=Dll linguist-vendored=false
+*.dockerignore linguist-language=Docker linguist-vendored=false
+*.ex4 linguist-language=Ex4 linguist-vendored=false
+*.gitignore linguist-language=Git linguist-vendored=false
+*.ico linguist-language=Ico linguist-vendored=false
+*.ini linguist-language=Ini linguist-vendored=false
+*.md linguist-language=Markdown linguist-vendored=false
+*.mq4 linguist-language=Mq4 linguist-vendored=false
+*.mqh linguist-language=Mqh linguist-vendored=false
+*.py linguist-language=Python linguist-vendored=false
+*.set linguist-language=Set linguist-vendored=false
+*.sh linguist-language=Bash linguist-vendored=false
+*.tpl linguist-language=Template File linguist-vendored=false
+docker-compose.yml linguist-language=Docker linguist-vendored=false

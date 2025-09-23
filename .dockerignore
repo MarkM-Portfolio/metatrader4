@@ -1,0 +1,12 @@
+.git
+.gitignore
+.dockerignore
+Dockerfile*
+docker-compose.yml
+docker_run.sh
+**/*.mq4
+**/*.mqh
+**/*.dat
+**/*.log
+
+.env

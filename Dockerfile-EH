@@ -1,0 +1,45 @@
+FROM dorowu/ubuntu-desktop-lxde-vnc:latest
+
+ARG USER="ubuntu"
+ARG PORT
+ARG APP_DIR=/home/${USER}/metatrader4
+
+RUN	apt-get install -y software-properties-common &&\
+	rm -rf /etc/apt/sources.list.d/ &&\
+	wget -O - https://dl.winehq.org/wine-builds/winehq.key | apt-key add - &&\
+	add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main' &&\
+	dpkg --add-architecture i386 && apt -y update &&\ 
+	apt -y install --install-recommends winehq-stable &&\
+	export WINEARCH=win32 && export WINEPREFIX=~/.wine32 &&\
+	# mkdir -p /home/${USER}/.wine &&\
+	useradd -m ${USER} &&\
+	echo "\n${USER} ALL=(ALL:ALL) ALL" >> /etc/sudoers &&\
+	usermod -aG ${USER} ${USER} &&\
+	apt -y upgrade &&\
+	rm -rf /etc/localtime &&\
+	ln -s /usr/share/zoneinfo/Asia/Manila /etc/localtime &&\
+	apt -y install python3-pip cron unzip &&\
+	pip install selenium &&\
+	pip install webdriver_manager &&\
+	pip install pytz &&\
+	pip install requests && pip install --upgrade requests &&\
+	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" &&\
+	unzip awscliv2.zip  &&\
+	./aws/install  &&\
+	rm -rf ./aws/ awscliv2.zip &&\
+	mkdir ${HOME}/.aws &&\
+	service cron start &&\
+	echo '[default]' >> ${HOME}/.aws/credentials &&\
+	echo 'aws_access_key_id = AKIA5NLUUMXOZEX763M6' >> ${HOME}/.aws/credentials &&\
+	echo 'aws_secret_access_key = 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' >> ${HOME}/.aws/credentials &&\
+	echo '* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/M1/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive' >> /var/spool/cron/crontabs/root &&\
+	echo '* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/M5/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive' >> /var/spool/cron/crontabs/root &&\
+	echo '* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/M30/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive' >> /var/spool/cron/crontabs/root &&\
+	echo '* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/H1/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive' >> /var/spool/cron/crontabs/root &&\
+	echo '05 00 * * * rm -rf /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files/*-news.txt' >> /var/spool/cron/crontabs/root &&\
+	echo '55 00 * * * /usr/local/bin/aws s3 cp s3://tech-analysis/NEWS/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive' >> /var/spool/cron/crontabs/root &&\
+	echo '15 04 * * 6 rm -rf /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files/*' >> /var/spool/cron/crontabs/root
+
+COPY --chown=${USER}:${USER} . ${APP_DIR}
+
+WORKDIR ${APP_DIR}

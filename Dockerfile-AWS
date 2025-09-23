@@ -1,0 +1,30 @@
+FROM public.ecr.aws/lambda/python:3.8
+
+# Install chrome dependecies
+RUN yum install unzip atk at-spi2-atk gtk3 cups-libs pango libdrm \ 
+    libXcomposite libXcursor libXdamage libXext libXtst libXt \
+    libXrandr libXScrnSaver alsa-lib -y
+
+# Copy install scripts
+# COPY requirements.txt /tmp/
+# COPY install-chrome.sh /tmp/
+
+# # Install chromium, chrome-driver
+# RUN /usr/bin/bash /tmp/install.sh
+
+# # Install Python dependencies for function
+RUN pip install --upgrade pip -q &&\
+    pip install boto3 &&\
+    pip install selenium &&\
+	pip install webdriver_manager &&\
+	pip install pytz &&\
+	pip install requests && pip install --upgrade requests
+
+# RUN pip install -r /tmp/requirements.txt -q
+
+# Remove unused packages
+# RUN yum remove unzip -y
+
+COPY aws_lambda_tech-analysis.py /var/task/app.py
+
+CMD \[ "app.lambda_handler" ] \

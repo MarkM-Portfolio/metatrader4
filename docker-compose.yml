@@ -1,0 +1,31 @@
+# version: '3.8'
+services:
+    mt4:
+      container_name: mt4
+      image: mt4_setup
+      build:
+        context: .
+        dockerfile: ${DOCKER_FILE}
+        args:
+          USERNAME: ${USERNAME}
+          VNC_PASSWORD: ${VNC_PASSWORD}
+          VNC_PORT: ${VNC_PORT}
+      ports:
+        - ${VNC_PORT}:6080
+        - ${HTTPS_PORT}:443
+        - 5801:5801
+      environment:
+        DOCKER_FILE: ${DOCKER_FILE}
+        USERNAME: ${USERNAME}
+        VNC_PASSWORD: ${VNC_PASSWORD}
+        HTTPS_PASSWORD: ${HTTPS_PASSWORD}
+        VNC_PORT: ${VNC_PORT}
+      volumes:
+        - /dev/shm:/dev/shm
+        - ~/Downloads:/home/ubuntu/downloads
+        - ~/ssl:/etc/nginx/ssl
+
+volumes:
+    downloads:
+      external: false
+      

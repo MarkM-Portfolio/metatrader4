@@ -1,0 +1,91 @@
+## Builder Stage
+FROM ubuntu:22.04 AS builder
+
+RUN apt-get -y update && apt-get -y install --no-install-recommends \
+    build-essential openssl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /rootfs \
+    && rm -rf /etc/localtime \
+    && ln -s /usr/share/zoneinfo/Asia/Manila /etc/localtime 
+
+## Final Stage
+FROM ubuntu:22.04
+
+# Copy only necessary files from the builder stage
+COPY --from=builder /rootfs/ /
+
+## Env variables to avoid user interaction during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+RUN apt-get -y update && apt-get -y install --no-install-recommends \
+    xfce4 xfce4-goodies x11vnc xinit xorg xvfb xterm dbus-x11 xauth xfonts-base \
+    zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev \
+    libssl-dev libreadline-dev libffi-dev libsqlite3-dev \
+    libbz2-dev ca-certificates && update-ca-certificates \
+    curl wget vim sudo cron tar unzip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Python 3.12
+RUN wget "https://www.python.org/ftp/python/3.12.2/Python-3.12.2.tgz" \
+    && tar -xzf Python-3.12.2.tgz -C /usr/src \
+    && cd /usr/src/Python-3.12.2 && ./configure --enable-optimizations \
+    && make -j 8 && make altinstall && cd /home \
+    && ln -s /usr/local/bin/python3.12 /usr/bin/python --force \
+    && ln -s /usr/local/bin/pip3.12 /usr/bin/pip /usr/bin/pip3 --force \
+    && curl "https://bootstrap.pypa.io/get-pip.py" -o get-pip.py \
+    && python get-pip.py \
+    && rm -rf /usr/src Python-3.12.2.tgz get-pip.py \
+    && pip install --upgrade pip requests \
+    && pip install requests websockify \
+    && pip install selenium webdriver_manager pytz boto3
+
+ARG USERNAME
+ARG VNC_PASSWORD
+ARG VNC_PORT
+
+ENV USERNAME=${USERNAME}
+ENV VNC_PASSWORD=${VNC_PASSWORD}
+ENV VNC_PORT=${VNC_PORT}
+
+ARG APP_DIR=/home/${USERNAME}/metatrader4
+
+## Create user
+RUN useradd -m -s /bin/bash ${USERNAME} \
+    && echo ${USERNAME}:${VNC_PASSWORD} | chpasswd \
+    && echo "${USERNAME} ALL=(ALL:ALL) ALL" >> /etc/sudoers \
+    # && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+    && usermod -aG sudo ${USERNAME} \
+    && mkdir -p /home/${USERNAME}/.vnc
+	## For Local Python script
+	# && echo '0 0,3,6 * * * /usr/local/bin/python ${APP_DIR}/news-scheduler-AWS.py' >> /var/spool/cron/crontabs/root \
+    # && service cron start
+
+	## Include if using AWS Lambda
+	# curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" &&\
+	# unzip awscliv2.zip  &&\
+	# ./aws/install  &&\
+	# rm -rf ./aws/ awscliv2.zip &&\
+	# mkdir ${HOME}/.aws &&\
+	# echo '[default]' >> ${HOME}/.aws/credentials &&\
+	# echo 'aws_access_key_id = AKIA5NLUUMXOZEX763M6' >> ${HOME}/.aws/credentials &&\
+	# echo 'aws_secret_access_key = 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' >> ${HOME}/.aws/credentials &&\
+	# echo '* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/M1/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive' >> /var/spool/cron/crontabs/root &&\
+	# echo '* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/M5/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive' >> /var/spool/cron/crontabs/root &&\
+	# echo '* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/M30/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive' >> /var/spool/cron/crontabs/root &&\
+	# echo '* * * * * /usr/local/bin/aws s3 cp s3://tech-analysis/H1/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive' >> /var/spool/cron/crontabs/root &&\
+	# echo '05 00 * * * rm -rf /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files/*-news.txt' >> /var/spool/cron/crontabs/root &&\
+	# echo '55 00 * * * /usr/local/bin/aws s3 cp s3://tech-analysis/NEWS/ /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files --recursive' >> /var/spool/cron/crontabs/root &&\
+	# echo '15 04 * * 6 rm -rf /root/.wine/drive_c/Program\ Files\ \(x86\)/Fullerton\ Markets\ Inc\ MT4/MQL4/Files/*' >> /var/spool/cron/crontabs/root
+
+COPY --chown=${USERNAME}:${USERNAME} . ${APP_DIR}
+
+# USER ${USERNAME}
+
+WORKDIR ${APP_DIR}
+
+EXPOSE ${VNC_PORT}
+
+## Start VNC server
+CMD [ "x11vnc", "-forever", "-usepw", "-create" ]
+# CMD [ "tail", "-f" ]
